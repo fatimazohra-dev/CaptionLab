@@ -1,0 +1,1036 @@
+% !TeX program = xelatex
+% Utiliser XeLaTeX ou LuaLaTeX pour le support de l'Arabe et des polices modernes
+
+\documentclass{report}
+
+% --- Packages essentiels ---
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm} % Ajustez les marges si nécessaire
+
+\usepackage{graphicx} % Pour inclure des images (figures)
+\usepackage{hyperref} % Pour créer des liens dans le PDF (ToC, figures, etc.)
+\usepackage{enumitem} % Pour personnaliser les listes (utilisé ici pour les requirements)
+\usepackage{amsmath} % Utile pour les maths, même si peu utilisé
+\usepackage{amssymb} % Utile pour les symboles
+
+% --- Support linguistique (Français et Arabe) ---
+\usepackage{polyglossia}
+\setmainlanguage{francais} % Langue principale
+\setotherlanguage{arabic}   % Autre langue (pour la page de titre)
+
+% Configurer une police pour l'Arabe (remplacez "Amiri" si vous préférez/avez une autre police)
+% Assurez-vous que la police Amiri est installée sur votre système
+\newfontfamily\arabicfont[Script=Arabic]{Amiri}
+
+% --- Configuration de la Table des Matières, etc. ---
+\usepackage{tocloft} % Pour personnaliser la table des matières
+
+% Redéfinir le titre de l'abstract
+\renewcommand{\abstractname}{Résumé}
+
+% --- Page de titre personnalisée ---
+\begin{document}
+
+\begin{titlepage}
+    \centering
+
+    % Université Abdelmalek Essaâdi (Arabe et Français) - Gauche
+    \begin{minipage}[t]{0.45\textwidth}
+        \raggedright
+        % Placeholder pour le logo de l'université gauche
+        % \includegraphics[width=3cm]{logo_univ_gauche.png}\\[1em]
+        {\Large \textarabic{جامعة عبد المالك السعدي}}\\[0.5em]
+        Université Abdelmalek Essaâdi
+    \end{minipage}\hfill
+    % Faculté des Sciences Tétouan (Arabe et Français) - Droite
+    \begin{minipage}[t]{0.45\textwidth}
+        \raggedleft
+        {\Large \textarabic{كلية العلوم}}\\[0.5em]
+        Faculté des Sciences Tétouan\\[1em]
+        % Placeholder pour le logo de l'université droite (peut être le même)
+        % \includegraphics[width=3cm]{logo_univ_droite.png}\\[1em]
+         {\Large \textarabic{جامعة عبد المالك السعدي}}\\[0.5em]
+         Université Abdelmalek Essaadi
+    \end{minipage}
+
+    \vfill
+
+    {\huge\bfseries Projet de Fin d'Études}\\[1em]
+    {\Large Pour l'obtention du diplôme de}\\[0.5em]
+    {\Large\bfseries La Licence Fondamentale en Sciences Mathématiques et Informatique}\\[2em]
+
+    \hrule height 1pt
+    \vspace{0.5cm}
+    {\Large\bfseries Développement d'une Application de Bureau pour la Transcription, Traduction et Résumé Automatisés de Vidéos}\\[0.5cm]
+    \hrule height 1pt
+
+    \vfill
+
+    \raggedright
+    {\Large Réalisé par:}\\[1em]
+    {\Large\bfseries BOUTEFAH KHATIB Fatima Zohra}\\[0.5em]
+    {\Large\bfseries BAKKALI KASMI Mohamed}\\[2em]
+
+    \raggedright
+    {\Large Soutenu le 23 juin 2025 devant la commission de jury composé de :}\\[1em]
+
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        Pr. & ELMAHOUTI Abderrahim & Département d'Informatique & Examinateur \\
+        \hline
+        Pr. & BEN-HDECH Adil & Département d'Informatique & Encadrant \\
+        \hline
+        Pr. & ABDOUN Otman & Département d'Informatique & Examinateur \\
+        \hline
+    \end{tabular}
+
+    \vfill
+
+    {\large Année universitaire : 2024-2025}
+
+\end{titlepage}
+
+% Page blanche (pour reproduire la page 2 si désiré)
+\newpage
+\thispagestyle{empty} % Pas de numéro de page
+\cleardoublepage % Assure que la prochaine page (ToC) commence sur une page impaire si le style de document le gère
+
+% --- Résumé ---
+\begin{abstract}
+    CaptionLab est une application de bureau développée dans Visual Studio Code en vue de faciliter la fabrication de sous-titres et de résumés de contenus multimédias. Établie par BOUTEFAH KHATIB Fatima Zohra et BAKKALI KASMI Mohamed sous la direction de M. BEN-HDECH Adil, l'application permet de sélectionner directement l'action souhaitée (transcription audio, résumé de texte ou traduction) en cliquant sur l’un des boutons affichés à l’écran. Les fonctionnalités de base sont implémentées en intégrant des modèles de langage de grande taille (LLMs) et des techniques avancées de traitement du langage naturel (NLP). L’interface ne comporte aucun formulaire à remplir : une fois l’action sélectionnée, le système traite le fichier multimédia ou le texte source et affiche le résultat immédiatement. Ce rapport détaille la conception de l’interface, les aspects techniques liés aux LLMs, ainsi que les capacités de transcription, de résumé et de traduction automatisées proposées par CaptionLab.
+\end{abstract}
+
+\cleardoublepage % Nouvelle page pour la table des matières
+
+% --- Table des Matières ---
+\tableofcontents
+
+\cleardoublepage % Nouvelle page pour la liste des figures
+
+% --- Liste des Figures ---
+\listoffigures
+
+\cleardoublepage % Nouvelle page pour la liste des abréviations
+
+% --- Liste des Abréviations ---
+\chapter*{Liste des abréviations}
+\addcontentsline{toc}{chapter}{Liste des abréviations} % Ajouter à la table des matières
+
+\noindent
+\begin{tabular}{ll}
+    \hline
+    \textbf{Abréviation} & \textbf{Désignation} \\
+    \hline
+    API   & Application Programming Interface \\
+    ASR   & Automatic Speech Recognition \\
+    AVI   & Audio Video Interleave \\
+    CPU   & Unité Centrale de Traitement \\
+    FLV   & Flash Video \\
+    GUI   & Graphical User Interface \\
+    IA    & Intelligence Artificielle \\
+    LLM   & Grand Modèle de Langage \\
+    MKV   & Matroska Video \\
+    NLP   & Traitement du Langage Naturel \\
+    NLTK  & Boîte à Outils pour le Langage Naturel \\
+    PIP   & Installeur de Paquets pour Python \\
+    RTL   & Droite-à-Gauche \\
+    SRT   & Texte SubRip \\
+    VENV  & Environnement Virtuel \\
+    VLC   & Video Lan Client \\
+    VRAM  & Video Random Acces Memory \\
+    VS Code & Visual Studio Code \\
+    WEBM  & Web Media \\
+    \hline
+\end{tabular}
+
+\cleardoublepage % Nouvelle page pour la dédicace
+
+% --- Dédicace ---
+\chapter*{Dédicace}
+\addcontentsline{toc}{chapter}{Dédicace} % Ajouter à la table des matières
+
+De tout cœur, nous voulons dédier ce travail à toutes celles et tous ceux qui, de près ou de loin, ont contribué à notre parcours.
+
+\vspace{1em} % Ajouter un peu d'espace vertical
+
+\noindent \textbf{À nos chers parents,}
+Vous êtes notre source d'inspiration, notre soutien en temps de détresse, et notre rayon de soleil dans le noir. Vos sacrifices silencieux, votre amour sans réserve, et votre présence constante ont été l'élan de notre succès. Que ce modeste effort soit le reflet de notre profonde reconnaissance.
+Puisse Dieu vous donner santé, bonheur et longue vie.
+
+\vspace{1em}
+
+\noindent \textbf{À nos enseignants et encadrants,}
+Nous lui exprimons toute notre gratitude à Monsieur BEN-HDECH ADIL, pour sa bienveillance, sa disponibilité, et la puissance de ses conseils. Merci pour votre mentorat précieux tout au long de ce projet.
+
+\vspace{1em}
+
+\noindent \textbf{À nos amis fidèles,}
+À ceux qui ont su nous encourager, nous écouter et croire en nous. Votre amitié a été une force sur laquelle nous avons toujours pu compter. Vous faites partie intégrante de ce chemin.
+
+\vspace{1em}
+
+\noindent \textbf{À toutes celles et à ceux,}
+qui, d'une manière ou d'une autre, ont semé en nous des graines de savoir, de courage ou d'espoir...
+Recevez nos plus sincères remerciements.
+
+\cleardoublepage % Nouvelle page pour les remerciements
+
+% --- Remerciement ---
+\chapter*{Remerciement}
+\addcontentsline{toc}{chapter}{Remerciement} % Ajouter à la table des matières
+
+Avant tout, nos remerciements s'adressent à Dieu, pour Sa grâce illimitée, source de force, de patience et de courage qui nous a accompagnés tout au long de l'élaboration de ce projet.
+
+Nous adressons les plus sincères de nos remerciements aux membres du jury, pour l'honneur qu'ils nous font en jugeant ce travail. Vous recevez, par le biais de ce mémoire, l'expression de notre profond respect et de notre reconnaissance.
+
+Nos remerciements les plus chaleureux vont également à Monsieur BEN-HDECH Adil, notre encadrant, pour sa disponibilité, son écoute, ainsi que pour ses conseils avisés et le temps précieux qu'il nous a consacré malgré ses nombreux engagements.
+
+Nous souhaitons également exprimer notre profonde gratitude au Professeur Youssef ZAZ. Pour son initiative et son dévouement au sein du Club AI-IoT. Ses sessions d'explication sur les concepts issus de l'ouvrage « Build a Large Language Model (from Scratch) » ont été cruciales. Il a su rendre des sujets particulièrement complexes accessibles et passionnants, posant ainsi les fondations techniques et conceptuelles de notre travail.
+
+Nous n'oublions pas non plus nos chers parents, dont les encouragements constants, la tolérance et l'amour ont été un pilier solide tout au long de notre vie.
+
+Enfin, un grand merci à nos proches et amis pour leur présence constante, leurs encouragements et leur soutien moral tout au long de cette aventure.
+
+\cleardoublepage % Nouvelle page pour l'introduction
+
+% --- Introduction Générale ---
+\chapter{Introduction Générale}
+
+Dans le cadre de la validation de notre licence en informatique à l'université Abdelmalek Essaâdi de Tétouan, nous avons été chargés de réaliser un projet de fin d'études (PFE), aboutissement de trois années de formation technique et académique. Ce projet n'est pas seulement l'occasion de mettre en pratique les compétences acquises au cours de notre cursus, mais aussi une première immersion réelle dans le processus de conception et de développement de solutions innovantes répondant aux besoins actuels.
+
+Dans un monde où les contenus audiovisuels occupent une place centrale dans la communication, l'éducation et l'échange d'informations, l'accès rapide, clair et multilingue à ces contenus est devenu un enjeu primordial. Beaucoup des vidéos proposées en ligne souffrent du manque de sous-titrage, de traduction ou de résumé, ce qui restreint leur accessibilité, en particulier pour les personnes non francophones ou les personnes ayant des problèmes auditifs.
+
+C'est pour répondre à ce problème que notre projet, appelé CaptionLAB, a vu le jour. Il s'agit d'une application intelligente qui permet à l'utilisateur de produire automatiquement des transcriptions, des résumés et des traductions à partir de contenus vidéo, le tout via une interface claire, facile et interactive. Grâce à la mise en œuvre de modèles linguistiques de grande taille (LLM) et de technologies d'automatisation du traitement du langage (NLP), CaptionLAB automatise des tâches complexes en un simple clic.
+
+Notre service ne nécessite aucun formulaire ni configuration compliquée : l'utilisateur sélectionne ce qu'il souhaite faire, télécharge la vidéo ou l'audio, et obtient un résultat clair, structuré et exploitable. Née dans un environnement moderne, cette application vise à rendre les contenus numériques plus accessibles, compréhensibles et universels.
+
+L'état actuel du rapport décrit les différentes étapes de la réalisation de ce projet, depuis la réflexion initiale autour des LLM jusqu'à l'intégration fonctionnelle des services de transcription, de résumé et de traduction, en passant par la conception de l'interface et l'organisation technique.
+
+\cleardoublepage % Nouvelle page pour le chapitre 1
+
+% --- Chapitre 1 ---
+\chapter{Chapitre 1 : Contexte du projet}
+
+\noindent\begin{minipage}{0.9\textwidth}
+    \centering\itshape
+    Dans ce chapitre, nous décrivons le contexte, la problématique ainsi que les exigences du projet CaptionLab
+\end{minipage}\hfill
+\vspace{1em} % Espace après la citation
+
+\section{1.1 Introduction}
+Le projet "CaptionLab" a été conçu pour apporter une réponse technologique directe aux limitations actuelles du contenu vidéo. Il s'agit du développement d'une application de bureau dont la mission est de briser les barrières de l'accessibilité, de la langue et du temps.
+Concrètement, CaptionLab est une plateforme tout-en-un qui automatise trois processus clés :
+\begin{itemize}
+    \item \textbf{La Transcription:} En analysant la piste audio d'une vidéo, l'application génère un fichier de sous-titres synchronisé, rendant le contenu accessible aux personnes sourdes ou malentendantes et améliorant la compréhension générale.
+    \item \textbf{La Traduction:} En s'appuyant sur des services d'intelligence artificielle, elle traduit les sous-titres générés dans un large éventail de langues, permettant ainsi de toucher une audience mondiale.
+    \item \textbf{Le Résumé Automatique:} Grâce à des algorithmes de traitement du langage naturel (NLP), l'application analyse la transcription complète pour identifier et extraire les informations cruciales. Elle génère ensuite un résumé concis, présenté sous forme de points clés ou de paragraphe, permettant à l'utilisateur de saisir l'essentiel de la vidéo en quelques instants, un atout majeur pour la veille, la recherche ou la révision.
+\end{itemize}
+À travers ces trois fonctionnalités fondamentales, CaptionLab vise à offrir une expérience utilisateur simplifiée et à maximiser la valeur de chaque contenu vidéo.
+
+\section{1.2.Problématique de projet}
+Dans un contexte où les vidéos occupent une place prépondérante dans l'utilisation de l'information (éducation, divertissement, communication), leur efficacité reste limitée pour différentes catégories d'utilisateurs :
+\begin{itemize}
+    \item Les personnes sourdes ont besoin de sous-titres précis et synchronisés.
+    \item Les personnes non natives ont besoin de traductions pour comprendre le contenu dans une langue étrangère.
+    \item Les professionnels (enseignants, entreprises) manquent d'outils efficaces pour résumer rapidement des heures de vidéo.
+\end{itemize}
+Pourtant, les solutions existantes présentent des lacunes :
+\begin{itemize}
+    \item Les sous-titres automatiques (YouTube, etc.) ont tendance à être peu précis, en particulier pour le vocabulaire technique ou les accents.
+    \item Les traducteurs (par exemple, Google Translate) ne traitent pas par défaut la synchronisation avec les vidéos.
+    \item Les résumés automatisés sont superficiels ou hors contexte.
+\end{itemize}
+Comment concevoir une application qui intègre efficacement :
+\begin{itemize}
+    \item Une retranscription précise (incluant les accents et les jargons) ?
+    \item Une traduction qui maintient la synchronisation tout en conservant le sens original ?
+    \item Un résumé concis et contextuel du contenu ?
+    \item Une intégration fluide dans un lecteur vidéo convivial ?
+\end{itemize}
+
+\section{1.3. Solutions proposées}
+\begin{itemize}
+    \item Pour une transcription optimale, nous implémentons le modèle Whisper, reconnu pour sa haute précision. Nous l'avons de plus associé à un système de post-traitement visant à améliorer davantage la qualité des résultats tout en optimisant le temps de traitement.
+    \item Pour la traduction contextuelle, notre approche s'appuie sur l'API de Google Translate. Afin de maintenir une synchronisation précise, nous avons mis en œuvre un processus personnalisé : chaque segment de sous-titre est traité individuellement, son texte est envoyé à l'API pour traduction, puis le résultat est réassocié à l'horodatage d'origine. Cette méthode garantit que les sous-titres traduits conservent la temporalité des dialogues, préservant ainsi leur fluidité et leur sens
+    \item Le résumé automatique combine la puissance de Gemini avec une analyse sémantique avancée pour extraire l'essentiel du contenu en quelques secondes.
+    \item Le lecteur intégré a été conçu pour offrir une expérience utilisateur fluide et réactive, notamment grâce à une synchronisation précise et la possibilité d'afficher une double piste de sous-titres modifiable à la volée.
+    \item Notre architecture modulaire permet une grande flexibilité d'utilisation, que ce soit en ligne avec toutes fonctionnalités ou hors ligne avec les capacités de base.
+\end{itemize}
+
+\section{1.4 Les besoins et Les exigences}
+Le projet CaptionLab part d'un constat simple : la vidéo est aujourd'hui un outil de communication majeur, mais elle reste souvent limitée par les barrières linguistiques et la complexité de son contenu. Créer, traduire et résumer des sous-titres manuellement prend du temps et demande des compétences techniques.
+CaptionLab vise à simplifier ces tâches en proposant une application de bureau automatisée. Elle permet de générer, traduire et résumer des sous-titres facilement, rendant ainsi les vidéos plus accessibles et compréhensibles pour un large public.
+Le développement de l'application repose sur des exigences bien définies, regroupées en deux catégories :
+\begin{itemize}
+    \item \textbf{Exigences fonctionnelles} : ce que le système doit faire.
+    \item \textbf{Exigences non fonctionnelles} : comment il doit le faire (performance, ergonomie, fiabilité).
+\end{itemize}
+
+\subsection{1.4.1 Exigences Fonctionnelles}
+Les exigences fonctionnelles définissent les fonctionnalités spécifiques que l'application CaptionLab doit offrir à ses utilisateurs. Elles décrivent les interactions entre l'utilisateur et le système, ainsi que les opérations que le système doit être capable d'exécuter. Pour CaptionLab ces exigences sont les suivantes :
+
+\vspace{1em}
+\textbf{Gestion des Fichiers Vidéo :}
+\begin{itemize}[leftmargin=*]
+    \item L'utilisateur doit pouvoir importer des fichiers vidéo dans des formats courants (ex: MP4, AVI, MKV, MOV, WEBM, FLV).
+    \item L'application doit permettre la lecture de la vidéo importée avec des contrôles standards (lecture, pause, arrêt, barre de progression, volume, muet).
+    \item L'utilisateur doit pouvoir visualiser la vidéo en mode plein écran.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Génération de Sous-titres :}
+\begin{itemize}[leftmargin=*]
+    \item L'application doit permettre la génération automatique de sous-titres à partir de l'audio de la vidéo en utilisant le modèle OpenAI Whisper.[3]
+    \item L'utilisateur doit pouvoir sélectionner le modèle Whisper à utiliser (tiny, base, small, medium, large) pour équilibrer vitesse et précision.
+    \item L'utilisateur doit pouvoir spécifier la langue source de la vidéo pour Whisper, ou opter pour la détection automatique.
+    \item Les sous-titres générés (segments avec timestamps et texte) doivent être affichables dans un onglet dédié.
+    \item Les sous-titres générés doivent pouvoir être affichés en surimpression sur la vidéo pendant la lecture.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Traduction des Sous-titres :}
+\begin{itemize}[leftmargin=*]
+    \item L'application doit permettre la traduction des sous-titres originaux générés vers une langue cible sélectionnée par l'utilisateur, en utilisant Google Translate.
+    \item L'utilisateur doit pouvoir choisir parmi une liste prédéfinie de langues cibles pour la traduction.
+    \item Les sous-titres traduits (segments avec timestamps et texte traduit) doivent être affichables dans un onglet dédié.
+    \item Les sous-titres traduits doivent pouvoir être affichés en surimpression sur la vidéo pendant la lecture, en remplacement ou en complément des originaux.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Exportation des Données :}
+\begin{itemize}[leftmargin=*]
+    \item L'utilisateur doit pouvoir exporter les sous-titres originaux au format SRT.
+    \item L'utilisateur doit pouvoir exporter le résumé vidéo au format texte (.txt).
+    \item (Potentiellement, si VideoDownloadWorker est implémenté : L'utilisateur doit pouvoir exporter la vidéo avec les sous-titres incrustés).
+\end{itemize}
+
+\vspace{1em}
+\textbf{Interface Utilisateur et Interaction :}
+\begin{itemize}[leftmargin=*]
+    \item L'application doit proposer une interface utilisateur graphique (GUI) intuitive et conviviale.
+    \item L'interface utilisateur doit être disponible en plusieurs langues (Anglais, Français, Arabe), avec un mécanisme de sélection.
+    \item L'application doit fournir un retour visuel sur la progression des tâches longues (génération, traduction, résumé) via une barre de progression.
+    \item Des messages de statut et d'erreur clairs doivent être affichés à l'utilisateur.
+    \item L'application doit émettre des notifications sonores (distinctes) à la fin des tâches principales.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Résumé de Vidéo :}
+\begin{itemize}[leftmargin=*]
+    \item L'application doit permettre la génération d'un résumé textuel du contenu de la vidéo, basé sur le texte intégral des sous-titres originaux, en utilisant l'API Google Gemini[4].
+    \item Le résumé généré doit être affichable dans un onglet dédié.
+\end{itemize}
+
+\subsection{1.4.2 Exigences non Fonctionnelles}
+Les exigences non fonctionnelles décrivent les qualités et les contraintes du système CaptionLab. Elles ne concernent pas ce que le système fait, mais comment il le fait. Ces exigences sont cruciales pour l'expérience utilisateur et la maintenabilité du système.
+
+\vspace{1em}
+\textbf{Performance :}
+\begin{itemize}[leftmargin=*]
+    \item Réactivité de l'interface : L'interface utilisateur doit rester réactive même pendant les opérations de traitement en arrière-plan.
+    \item Temps de traitement : Bien que dépendant de la taille de la vidéo, de la complexité du modèle Whisper et des API externes, l'application doit s'efforcer de minimiser les temps d'attente et informer l'utilisateur de la progression.
+    \item Lecture vidéo fluide : La lecture vidéo doit être fluide et sans saccades excessives pour les formats et résolutions supportés.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Ergonomie :}
+\begin{itemize}[leftmargin=*]
+    \item Intuitivité : L'application doit être facile à comprendre et à utiliser, même pour des utilisateurs n'ayant pas une grande expertise technique. Le flux de travail doit être logique.
+    \item Clarté : Les libellés, les messages d'erreur et les instructions doivent être clairs et concis dans toutes les langues supportées.
+    \item Accessibilité : Le thème sombre et le contraste des couleurs doivent contribuer à une bonne lisibilité et réduire la fatigue visuelle.
+    \item Apprentissage : La prise en main de l'application doit être rapide.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Fiabilité :}
+\begin{itemize}[leftmargin=*]
+    \item Stabilité : L'application doit être stable et éviter les plantages inattendus.
+    \item Gestion des erreurs : Les erreurs (ex: fichier vidéo invalide, clé API manquante, problème de connexion réseau pour les API, échec de chargement de modèle) doivent être gérées gracieusement, avec des messages informatifs pour l'utilisateur.
+    \item Complétude des tâches : Les processus de génération, traduction et résumé doivent se terminer correctement ou indiquer clairement la raison d'un échec.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Maintenabilité :}
+\begin{itemize}[leftmargin=*]
+    \item Modularité : Le code doit être structuré de manière modulaire (comme observé avec les classes Worker, VideoPlayer, MainWindow) pour faciliter les mises à jour, les corrections de bugs et l'ajout de nouvelles fonctionnalités.
+    \item Lisibilité du code : Le code doit être bien commenté et suivre des conventions de style pour faciliter sa compréhension par d'autres développeurs ou pour des évolutions futures.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Compatibilité :}
+\begin{itemize}[leftmargin=*]
+    \item Système d'exploitation : L'application doit fonctionner correctement sur le système d'exploitation cible (principalement Windows, compte tenu de l'utilisation de winsound et de la gestion spécifique du hwnd pour VLC). Si d'autres plateformes sont visées, des adaptations seraient nécessaires.
+    \item Dépendances : L'application doit clairement indiquer ses dépendances logicielles (Python, PyQt5, VLC, Whisper, etc.) et, idéalement, faciliter leur installation.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Consommation des Ressources :}
+\begin{itemize}[leftmargin=*]
+    \item CPU et RAM : L'application doit utiliser les ressources système (CPU, mémoire vive) de manière raisonnable, en tenant compte du fait que les modèles IA comme Whisper peuvent être gourmands. L'utilisateur doit être conscient de l'impact potentiel du choix des modèles.
+\end{itemize}
+
+\vspace{1em}
+\textbf{Sécurité (aspect mineur pour une application de bureau locale, mais à considérer) :}
+\begin{itemize}[leftmargin=*]
+    \item Clés API : Si des clés API sont stockées (ex: via .env), elles ne doivent pas être intégrées en dur dans le code distribué. L'utilisateur est responsable de la gestion de son fichier .env[9].
+\end{itemize}
+
+\section{1.5 Conclusion}
+Ce premier chapitre a posé les bases du projet CaptionLab, une application de bureau conçue pour simplifier le sous-titrage, la traduction et le résumé de vidéos. Nous avons défini le problème, présenté CaptionLab comme une solution automatisée s'appuyant sur des IA (Whisper, Google Translate, Gemini) et listé les exigences fonctionnelles et non fonctionnelles. La réalisation de ces fonctionnalités dépendant crucialement des Modèles de Langage à Grande Échelle (LLM), le chapitre suivant se concentrera sur leur compréhension, leur optimisation et les défis de leur intégration, afin de guider la conception technique de l'application.
+
+\cleardoublepage % Nouvelle page pour le chapitre 2
+
+% --- Chapitre 2 ---
+\chapter{Chapitre 2 : Grand modèle de langage}
+
+\noindent\begin{minipage}{0.9\textwidth}
+    \centering\itshape
+    Dans ce chapitre, nous allons découvrir ce que sont les Large Language Models (LLMs) ainsi que leurs principales applications dans divers domaines
+\end{minipage}\hfill
+\vspace{1em} % Espace après la citation
+
+\section{2.1 Introduction aux grands modèles de langage (LLM)}
+Un LLM (grand modèle de langage) est un réseau de neurones conçu pour comprendre, générer et répondre à du texte de type humain. Ces modèles sont des réseaux de neurones profonds, entraînés sur d'immenses quantités de données textuelles, englobant parfois de larges pans de l'ensemble du texte publiquement disponible sur Internet.
+Le terme « grand » dans « grand modèle de langage » fait référence à la fois à la taille du modèle en termes de paramètres et à l'immense jeu de données sur lequel il est entraîné. De tels modèles ont souvent des dizaines, voire des centaines de milliards de paramètres, qui sont les poids ajustables du réseau, optimisés pendant l'entraînement pour prédire le mot suivant dans une séquence.
+La prédiction du mot suivant est une approche sensée car elle exploite la nature séquentielle inhérente au langage pour entraîner les modèles à comprendre le contexte, la structure et les relations au sein du texte. Pourtant, il s'agit d'une tâche très simple, et il est donc surprenant pour de nombreux chercheurs qu'elle puisse produire des modèles aussi performants. Dans les chapitres suivants, nous aborderons et mettrons en œuvre la procédure d'entraînement de prédiction du mot suivant, étape par étape.
+
+\begin{figure}[h!]
+    \centering
+    % Placeholder pour la figure 1
+    \includegraphics[width=0.8\textwidth]{figure1.png}
+    \caption{Hiérarchie des concepts en intelligence artificielle}
+    \label{fig:ia_hierarchy}
+\end{figure}
+
+\section{2.2 Applications des LLM}
+Grâce à leurs capacités avancées pour analyser et comprendre les données textuelles non structurées, les LLM ont un large éventail d'applications dans de nombreux domaines. Aujourd'hui, les LLM sont utilisés pour la traduction automatique, la génération de nouveaux textes, l'analyse de sentiments, le résumé de texte et de nombreuses autres tâches. Récemment, les LLM ont été utilisés pour la création de contenu, comme la rédaction d'œuvres de fiction, d'articles et même de code informatique.
+Les LLM peuvent également alimenter des chatbots et des assistants virtuels sophistiqués, tels que ChatGPT d'OpenAI ou Gemini de Google (anciennement appelé Bard), qui peuvent répondre aux requêtes des utilisateurs et enrichir les moteurs de recherche traditionnels comme Google Search ou Microsoft Bing. De plus, les LLM peuvent être utilisés pour l'extraction efficace de connaissances à partir de vastes volumes de textes dans des domaines spécialisés tels que la médecine ou le droit. Cela inclut le passage au crible de documents, le résumé de longs passages et la réponse à des questions techniques.
+En bref, les LLM sont d'une valeur inestimable pour automatiser presque toute tâche impliquant l'analyse et la génération de texte. Leurs applications sont quasiment illimitées, et à mesure que nous continuons d'innover et d'explorer de nouvelles manières d'utiliser ces modèles, il est clair que les LLM ont le potentiel de redéfinir notre relation avec la technologie, en la rendant plus conversationnelle, intuitive et accessible.
+Nous nous concentrerons sur la compréhension du fonctionnement des LLM en partant de zéro, en codant un LLM capable de générer des textes. Vous découvrirez également les techniques qui permettent aux LLM d'exécuter des requêtes, allant de la réponse à des questions au résumé de texte, en passant par la traduction dans différentes langues, et plus encore. En d'autres termes, vous apprendrez comment fonctionnent les assistants LLM complexes tels que ChatGPT en en construisant un, étape par étape.
+
+\section{2.3 Application des Modèles de Langage à Grande Échelle (LLM) dans CaptionLab}
+Après avoir exploré les fondements théoriques et les capacités générales des Modèles de Langage à Grande Échelle (LLM) dans les sections précédentes (ou le chapitre précédent), ce chapitre se concentre sur leur mise en œuvre pratique et leur rôle central au sein de l'application CaptionLab. Nous allons détailler comment les LLM spécifiques – OpenAI Whisper, la technologie derrière Google Translate, et Google Gemini sont exploités pour accomplir les tâches clés de transcription audio, de traduction de texte et de résumé de contenu vidéo. L'objectif est de montrer la synergie entre les capacités de ces modèles et les fonctionnalités offertes à l'utilisateur de CaptionLab, tout en soulignant les choix d'intégration et d'optimisation effectués.
+
+\subsection{2.3.1 Transcription Audio avec OpenAI Whisper}
+\textbf{Rôle et Importance dans le Flux de Travail de CaptionLab}
+\begin{itemize}[leftmargin=*]
+    \item Whisper comme point d'entrée : la transcription est la première étape cruciale, fournissant le matériau de base (le texte) pour la traduction et le résumé.
+    \item Impact de la qualité de la transcription sur les étapes suivantes.
+\end{itemize}
+\textbf{Intégration Technique (SubtitleWorker)}
+\begin{itemize}[leftmargin=*]
+    \item Utilisation de la bibliothèque openai-whisper pour un traitement local.
+    \item Avantages : Confidentialité des données audio, pas de dépendance à une API externe pour cette tâche, contrôle sur le choix du modèle.
+    \item Inconvénients : Nécessite des ressources locales (CPU/RAM, potentiellement VRAM).
+    \item Gestion du choix du modèle par l'utilisateur (tiny, base, small, medium, large) :
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \item Interface permettant la sélection.
+        \item Compromis expliqué à l'utilisateur (vitesse vs. précision vs. ressources).
+    \end{enumerate}
+    \item Paramètres d'appel à model.transcribe() :
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \item Gestion de la langue source (détection automatique vs. sélection manuelle par l'utilisateur).
+        \item Argument fp16 (ici désactivé pour une compatibilité CPU plus large, mais discussion de son potentiel).
+    \end{enumerate}
+    \item Traitement de la sortie de Whisper : Extraction des segments de texte avec leurs timestamps (start, end).
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \item Extraction des segments de texte avec leurs timestamps (start, end)
+        \item Formatage pour l'affichage dans le QTextEdit de CaptionLab et pour l'exportation au format SRT.
+    \end{enumerate}
+    \item Gestion des erreurs : Modèle non trouvé, fichier audio invalide, etc.
+\end{itemize}
+\textbf{Optimisations et Expérience Utilisateur}
+\begin{itemize}[leftmargin=*]
+    \item Exécution asynchrone dans un QThread pour ne pas figer l'interface.
+    \item Retour de progression via la QProgressBar.
+    \item Affichage des résultats segment par segment (ou du texte complet) dès que disponibles
+\end{itemize}
+
+\subsection{2.3.2 Traduction de Texte avec Google Translate}
+\textbf{Rôle et Valeur Ajoutée pour l'Accessibilité}
+\begin{itemize}[leftmargin=*]
+    \item Permettre la compréhension du contenu vidéo au-delà des barrières linguistiques.
+    \item Utilisation des transcriptions générées par Whisper comme source pour la traduction.
+\end{itemize}
+\textbf{Intégration Technique}
+\begin{itemize}[leftmargin=*]
+    \item Utilisation de la bibliothèque deep\_translator[10] comme interface simplifiée vers l'API de Google Translate[5].
+    \item Gestion des langues :
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \item Détection de la langue source à partir des métadonnées de Whisper ou spécification par l'utilisateur.
+        \item Sélection de la langue cible par l'utilisateur via un QComboBox dans CaptionLab.
+        \item Mapping des codes de langue si nécessaire.
+    \end{enumerate}
+    \item Processus de traduction :
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \setcounter{enumi}{3} % Continuer la numérotation
+        \item Traduction des segments de texte un par un (ou par lots optimisés) pour une meilleure gestion des erreurs et un retour progressif.
+        \item Conservation des timestamps originaux pour les segments traduits.
+    \end{enumerate}
+    \item Gestion des erreurs de l'API : Limites de taux, codes de langue invalides, problèmes de connexion.
+\end{itemize}
+\textbf{Optimisations et Expérience Utilisateur}
+\begin{itemize}[leftmargin=*]
+    \item Exécution asynchrone dans un QThread.
+    \item Affichage des segments traduits dans l'onglet dédié et mise à jour de la progression.
+    \item Option d'afficher les sous-titres traduits en surimpression sur la vidéo via VLC.
+\end{itemize}
+
+\subsection{2.3.3 Résumé de Contenu Vidéo avec Google Gemini}
+\textbf{Rôle et Utilité pour la Consommation Rapide d'Information}
+\begin{itemize}[leftmargin=*]
+    \item Fournir une synthèse concise du contenu vidéo basé sur le texte intégral des sous-titres originaux.
+    \item Aider l'utilisateur à évaluer rapidement la pertinence d'une vidéo ou à en retenir les points clés.
+\end{itemize}
+\textbf{Intégration Technique (GeminiSummarizationWorker)}
+\begin{itemize}[leftmargin=*]
+    \item Utilisation de la bibliothèque google-generativeai pour interagir avec l'API Gemini [4].
+    \item Configuration de la clé API (via .env) [9].
+    \item Choix du modèle Gemini (ex: gemini-1.5-flash ou gemini-pro pour un équilibre entre capacités, coût et rapidité).
+    \item Prompt Engineering :
+    \begin{enumerate}[label=\arabic*., leftmargin=*]
+        \item Conception du prompt envoyé à Gemini : Importance d'une instruction claire (ex: "Résume le texte suivant, qui est la transcription d'une vidéo : [texte complet des sous-titres]").
+        \item Possibilité d'ajouter des contraintes (longueur du résumé, style) si l'interface le permettait (actuellement non implémenté mais une piste d'évolution).
+    \end{enumerate}
+    \item Traitement de la réponse de l'API : Extraction du texte résumé.
+    \item Gestion des erreurs de l'API : Contenu bloqué, erreurs de quota, etc.
+\end{itemize}
+\textbf{Optimisations et Expérience Utilisateur}
+\begin{itemize}[leftmargin=*]
+    \item Exécution asynchrone dans un QThread.
+    \item Affichage du résumé dans l'onglet dédié et mise à jour de la progression.
+\end{itemize}
+
+\section{2.4 Conclusion}
+Ce chapitre détaille comment CaptionLab exploite concrètement les Modèles de Langage à Grande Échelle (LLM) pour ses fonctionnalités clés. Pour la transcription audio, l'application utilise OpenAI Whisper localement, permettant aux utilisateurs de choisir parmi différents modèles pour un équilibre entre vitesse et précision. Le texte transcrit sert ensuite de base à deux autres LLM. La traduction est assurée par l'API de Google Translate (via deep\_translator), rendant le contenu accessible en plusieurs langues. Enfin, le résumé du contenu vidéo est généré par Google Gemini (via google-generativeai)\footnotemark[11], qui synthétise le texte transcrit après une instruction (prompt) claire.
+L'intégration de ces LLM est gérée de manière asynchrone pour une expérience utilisateur fluide, avec un retour visuel sur la progression. Bien que puissante, cette synergie entre LLM présente des défis spécifiques à CaptionLab, notamment la gestion des ressources pour Whisper, la latence des API de Google, et la dépendance de la qualité des sorties en cascade. Néanmoins, cette approche permet à CaptionLab d'offrir des outils avancés pour rendre le contenu vidéo plus accessible et compréhensible.
+\footnotetext[11]{La référence [11] pointe vers google-generativeai sur PyPI, pas Google Gemini en général. J'ai conservé le texte original qui mentionne Google Gemini.}
+
+
+\cleardoublepage % Nouvelle page pour le chapitre 3
+
+% --- Chapitre 3 ---
+\chapter{Chapitre 3 : Réalisation du projet}
+
+\noindent\begin{minipage}{0.9\textwidth}
+    \centering\itshape
+    Ce chapitre présente les outils et les langages de développement employés pour la création de l'application, ainsi que les différentes étapes de sa réalisation. Nous décrirons également de manière détaillée le fonctionnement de l'application et en donnerons une vision claire.
+\end{minipage}\hfill
+\vspace{1em} % Espace après la citation
+
+\section{3.1 Introduction}
+Ce chapitre présente de manière détaillée les différentes étapes techniques qui ont conduit à la réalisation de notre application. Il expose d'abord l'environnement logiciel dans lequel le développement a été effectué, puis les outils et bibliothèques exploités pour assurer les différentes fonctionnalités du projet. Ensuite, une attention particulière sera portée à la conception de l'interface graphique unique, avec une explication précise de chaque élément qui la compose ainsi que de son rôle dans le fonctionnement global de l'application.
+
+\section{3.2 Environnement de Développement}
+
+\subsection{3.2.1 Langage de développement}
+% Placeholder Python logo
+% \includegraphics[width=2cm]{python_logo.png}
+Python est un langage de programmation interprété, de haut niveau et polyvalent. Il est réputé pour sa syntaxe claire et sa vaste collection de bibliothèques.[6]
+
+\subsection{3.2.2 Framework et Bibliothèques Principales et ses rôles dans le projet}
+
+\textbf{a. Interface Utilisateur (GUI)}
+% Placeholder Qt logo
+% \includegraphics[width=1.5cm]{qt_logo.png}
+PyQt5 est un ensemble de liaisons Python pour le framework d'applications multiplateformes Qt. Il permet de créer des interfaces graphiques riches et natives sur Windows, macOS et Linux.[7]
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : C'est la fondation de toute l'interface graphique de CAPTION LAB. Tous les éléments visuels, tels que la fenêtre principale (QMainWindow), les boutons (QPushButton), les zones de texte (QTextEdit), les onglets (QTabWidget), les listes déroulantes (QComboBox) et le conteneur du lecteur vidéo, sont créés et gérés avec PyQt5. Il gère également la boucle d'événements de l'application (clics, raccourcis clavier ...)
+\end{itemize}
+
+\textbf{b. Traitement Multimédia}
+% Placeholder VLC cone
+% \includegraphics[width=2cm]{vlc_cone.png}
+\noindent\textbf{python-vlc}
+Cette bibliothèque est une liaison Python pour libvlc, le moteur principal du célèbre lecteur multimédia VLC. Elle permet d'intégrer des fonctionnalités de lecture vidéo et audio complexes directement dans une application.[8]
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : python-vlc est au cœur du VideoPlayer. Il est utilisé pour lire le fichier vidéo importé, contrôler la lecture (play/pause), ajuster le volume, gérer la barre de progression et, surtout, pour afficher la vidéo dans un widget PyQt5. Sa capacité à charger des fichiers de sous-titres externes (.srt) est également exploitée pour superposer les sous-titres générés sur la vidéo.
+\end{itemize}
+
+% Placeholder FFmpeg logo
+% \includegraphics[width=2cm]{ffmpeg_logo.png}
+\noindent\textbf{FFmpeg (Dépendance externe implicite)}
+FFmpeg est une suite logicielle open-source complète pour le traitement des fichiers audio et vidéo. Il est généralement utilisé en ligne de commande pour des tâches comme la conversion, le transcodage ou l'incrustation de sous-titres.[13]
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Bien que non importé directement en Python, FFmpeg est la dépendance externe nécessaire pour la fonctionnalité (non entièrement implémentée dans le code fourni mais référencée) download\_video\_with\_subtitles. Le module subprocess de Python serait utilisé pour appeler FFmpeg en arrière-plan afin d'incruster de manière permanente les sous-titres (originaux ou traduits) dans le fichier vidéo, créant ainsi une nouvelle vidéo MP4.
+\end{itemize}
+
+\textbf{c. Intelligence Artificielle et Traitement du Langage}
+% Placeholder OpenAI logo
+% \includegraphics[width=2cm]{openai_logo.png}
+\noindent\textbf{OpenAI Whisper}
+Whisper est un modèle de reconnaissance vocale automatique (ASR) de pointe développé par OpenAI. Il est capable de transcrire l'audio de plusieurs langues avec une grande précision.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : C'est la pierre angulaire de la fonctionnalité de génération de sous-titres. La bibliothèque whisper est utilisée dans le SubtitleWorker (un thread dédié) pour transcrire l'audio de la vidéo. Le projet permet à l'utilisateur de choisir différents modèles Whisper (de tiny à large) pour trouver un équilibre entre vitesse et précision.
+\end{itemize}
+
+% Placeholder Gemini logo
+% \includegraphics[width=2cm]{gemini_logo.png}
+\noindent\textbf{Google Gemini API (google-generativeai)}
+Gemini est une famille de modèles d'IA générative multimodale développée par Google. L'API permet d'accéder à ses capacités de compréhension et de génération de texte.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Le modèle Gemini (spécifiquement gemini-2.0-flash pour sa rapidité) est utilisé dans le GeminiSummarizationWorker pour réaliser la fonction "Résumer la Vidéo". Il prend le texte complet transcrit par Whisper et génère un résumé concis, offrant une compréhension rapide du contenu de la vidéo.
+\end{itemize}
+
+\noindent\textbf{Deep Translator}
+Deep Translator est une bibliothèque Python flexible qui s'intègre à plusieurs services de traduction en ligne, dont Google Translate, MyMemory, etc.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Cette bibliothèque est utilisée dans le TranslationWorker pour alimenter la fonctionnalité "Traduire les Sous-titres". Elle prend les segments de sous-titres générés par Whisper et les traduit dans la langue choisie par l'utilisateur via l'API de Google Translate.
+\end{itemize}
+
+\textbf{Sumy et NLTK}
+Sumy est une bibliothèque pour le résumé automatique de textes[15]. NLTK (Natural Language Toolkit) est une plateforme complète pour la construction de programmes Python destinés à travailler avec des données en langage humain[14].
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Ces bibliothèques sont importées dans le fichier, ce qui suggère qu'elles ont pu être utilisées dans une version antérieure pour la fonctionnalité de résumé, ou qu'elles sont conservées comme une alternative. NLTK est nécessaire pour Sumy (pour la tokenisation et les mots vides). Actuellement, la logique de résumé active utilise l'API Gemini, qui est plus performante pour un résumé contextuel.
+\end{itemize}
+
+\textbf{d. Bibliothèques Utilitaires}
+\noindent\textbf{Threading \& Queue}
+Ce sont des modules standards de Python pour la gestion de la concurrence. threading permet d'exécuter des tâches longues (comme la transcription ou la traduction) en arrière-plan sans geler l'interface utilisateur.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Essentiel pour l'expérience utilisateur. Les SubtitleWorker, TranslationWorker et GeminiSummarizationWorker sont tous des QThread (une classe PyQt5 qui intègre le threading de Python). Cela garantit que l'application reste réactive et que l'utilisateur peut voir la progression pendant que les modèles d'IA travaillent.
+\end{itemize}
+
+\noindent\textbf{_python-dotenv}
+Cette bibliothèque permet de lire les paires clé-valeur d'un fichier .env et de les définir comme des variables d'environnement.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Utilisée pour gérer de manière sécurisée la clé d'API de Google Gemini. Au lieu de coder en dur la clé dans le script, l'utilisateur la place dans un fichier .env, qui est ensuite chargé au démarrage de l'application. C'est une bonne pratique de sécurité.
+\end{itemize}
+
+\noindent\textbf{winsound}
+Un module standard de Python disponible uniquement sur Windows pour accéder aux fonctionnalités de base de lecture de sons du système d'exploitation.
+\begin{itemize}[leftmargin=*]
+    \item Rôle dans le projet : Utilisé pour fournir des notifications sonores simples (Beep) à la fin des tâches longues comme la transcription, la traduction ou le résumé. Cela améliore l'expérience utilisateur en alertant lorsque l'application a terminé une tâche importante.
+\end{itemize}
+
+\section{3.3 Outils de Développement et de Gestion de Projet}
+
+\subsection{3.3.1 Éditeur de Code}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Visual Studio Code}
+\end{itemize}
+% Placeholder VS Code logo
+% \includegraphics[width=2cm]{vscode_logo.png}
+Visual Studio Code (souvent abrégé en VS Code) est un éditeur de code source extensible et gratuit, développé par Microsoft [2]. Il a été l'outil principal pour l'écriture, l'édition et le débogage de l'ensemble du code source Python du projet CaptionLab. Grâce à ses nombreuses extensions, il offre un environnement de développement très complet, avec des fonctionnalités clés telles que :
+\begin{itemize}[leftmargin=*]
+    \item La coloration syntaxique et l'autocomplétion intelligente (IntelliSense) pour Python, qui accélèrent l'écriture du code et réduisent les erreurs.
+    \item Un terminal intégré, permettant d'exécuter des commandes pip pour la gestion des paquets ou de lancer l'application directement depuis l'éditeur.
+    \item Une intégration native de Git, qui facilite grandement le suivi des modifications et la communication avec des dépôts distants comme GitHub.
+\end{itemize}
+
+\subsection{3.3.2 Gestion de l'Environnement et des Dépendances}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Environnement Virtuel Python (venv)}
+\end{itemize}
+Un environnement virtuel est un répertoire isolé qui contient une installation spécifique de Python ainsi que toutes les bibliothèques tierces nécessaires à un projet. L'utilisation de venv (le module standard de Python) a permis d'isoler les dépendances de CaptionLab (comme PyQt5, openai-whisper, etc.) de l'installation système de Python. Cela garantit la reproductibilité du projet sur d'autres machines et évite tout conflit entre les versions des bibliothèques de différents projets.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{pip (Pip Installs Packages)}
+\end{itemize}
+pip est le gestionnaire de paquets officiel pour Python. Il a été utilisé pour installer, mettre à jour et gérer toutes les bibliothèques externes requises par le projet depuis le Python Package Index (PyPI). Les dépendances sont souvent listées dans un fichier requirements.txt, permettant de recréer l'environnement de développement complet avec une seule commande (pip install -r requirements.txt), ce qui est essentiel pour la portabilité du projet.
+
+\subsection{3.3.3 Gestion de Version}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Git}
+\end{itemize}
+% Placeholder Git logo
+% \includegraphics[width=1.5cm]{git_logo.png}
+Git est un système de contrôle de version distribué, devenu le standard de l'industrie pour le suivi des modifications dans les projets logiciels. Pour CaptionLab, Git a été utilisé pour enregistrer l'évolution du code à chaque étape clé du développement. Chaque ajout de fonctionnalité, correction de bug ou refactorisation a été sauvegardé sous forme de "commit". Cela crée un historique complet et fiable du projet, permettant de revenir à une version antérieure en cas de problème ou de comprendre l'origine d'une modification.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{GitHub}
+\end{itemize}
+% Placeholder GitHub logo
+% \includegraphics[width=1.5cm]{github_logo.png}
+GitHub est une plateforme web qui fournit un service d'hébergement pour les dépôts (repositories) Git.[16] Il a probablement servi de sauvegarde distante et centralisée pour le code source de CaptionLab. Au-delà de la simple sauvegarde, GitHub facilite la gestion de projet grâce à des outils comme les "Issues" (pour le suivi des bugs et des tâches), les "Pull Requests" (pour proposer et réviser des modifications de code) et sert de vitrine pour le projet.
+
+\section{3.4 STRUCTURE DE L'INTERFACE PRINCIPALE}
+
+\subsection{3.4.1 La Barre de Menus}
+Située tout en haut de la fenêtre principale, une barre de menus (QMenuBar) standard offre un accès à des fonctionnalités fondamentales de l'application, organisées de manière conventionnelle.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure2.png} % Placeholder
+    \caption{Barre de menus principale de l'application}
+    \label{fig:menubar}
+\end{figure}
+
+\textbf{Menu "Fichier"}
+Le premier élément de la barre est le menu "Fichier". Visuellement, il s'agit d'une entrée de menu standard. Sa fonction est de regrouper les actions liées à la gestion de l'application elle-même. En cliquant dessus, l'utilisateur a accès à l'option "Quitter", qui permet de fermer proprement l'application. Pour plus de commodité, cette action est également associée au raccourci clavier universel Ctrl+Q
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figure3.png} % Placeholder
+    \caption{Menu déroulant "Fichier" avec l'option "Quitter"}
+    \label{fig:menu_fichier}
+\end{figure}
+
+\textbf{Menu "Aide"}
+À côté de "Fichier", le menu "Aide" (Help) sert à fournir des informations contextuelles sur le logiciel. Il contient une seule option, "À propos" (About). Lorsqu'elle est sélectionnée, cette action ouvre une boîte de dialogue informative qui présente des détails clés sur l'application, notamment son nom "CaptionLab", son numéro de version, et une brève description de son rôle et des technologies utilisées.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figure4.png} % Placeholder
+    \caption{Menu déroulant "Aide" avec l'option "À propos"}
+    \label{fig:menu_aide}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figure5.png} % Placeholder
+    \caption{Boîte de dialogue "À propos de CaptionLab"}
+    \label{fig:about_dialog}
+\end{figure}
+
+
+\subsection{3.4.2 Division de l'Espace de Travail (QSplitter)}
+La fenêtre est ensuite divisée par un QSplitter horizontal en deux panneaux redimensionnables :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Le Panneau Vidéo (à gauche)} : Dédié à la visualisation de la vidéo et à son contrôle.
+    \item \textbf{Le Panneau de Contrôle et de Résultats (à droite)} : Contient les commandes d'action, les paramètres et l'affichage des résultats textuels.
+\end{itemize}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure6.png} % Placeholder
+    \caption{Vue complète de l'interface de l'application "CaptionLab"}
+    \label{fig:full_interface}
+\end{figure}
+Cette disposition permet à l'utilisateur de visualiser la vidéo tout en interagissant avec les fonctionnalités de sous-titrage et en consultant les résultats en temps réel.
+
+\section{3.5 Description Détaillée des Composants}
+
+\subsection{3.5.1 Panneau Vidéo (Panneau de Gauche)}
+Ce panneau est centré sur le composant VideoPlayer, qui intègre un lecteur VLC pour une compatibilité étendue avec de nombreux formats vidéo.
+\textbf{Écran de Visualisation :} Une zone principale où la vidéo importée est lue.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure7.png} % Placeholder
+    \caption{Panneau vidéo avec un exemple de contenu et de sous-titres}
+    \label{fig:video_panel}
+\end{figure}
+
+\textbf{Barre de Contrôles de Lecture :} Située sous l'écran de visualisation, elle regroupe les éléments suivants :
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figure8.png} % Placeholder
+    \caption{Barre complète des contrôles de lecture vidéo}
+    \label{fig:playback_controls}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton Lecture/Pause (play\_button)} : Permet de lancer ou de mettre en pause la vidéo. L'icône change dynamiquement pour refléter l'état actuel.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure9.png} % Placeholder
+    \caption{Bouton "Lecture/Pause" de la vidéo}
+    \label{fig:play_pause_button}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Curseur de Position} : Une barre de progression interactive qui indique la position actuelle dans la vidéo et permet à l'utilisateur de naviguer rapidement dans le temps.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure10.png} % Placeholder
+    \caption{Curseur de position (barre de progression) de la vidéo}
+    \label{fig:position_slider}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Affichage du Temps} : Affiche le temps écoulé et la durée totale de la vidéo.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure11.png} % Placeholder
+    \caption{Affichage du temps écoulé et de la durée totale de la vidéo}
+    \label{fig:time_display}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton Muet/Volume} : Permet de couper ou de réactiver le son. L'icône change en fonction du niveau de volume (muet, bas, moyen, haut).
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure12.png} % Placeholder
+    \caption{Contrôle du volume avec son curseur}
+    \label{fig:volume_control}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Muet (Mute)} : L'icône montre un haut-parleur barré, indiquant que le son est coupé.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.2\textwidth]{figure13.png} % Placeholder
+    \caption{Icône "Muet" indiquant le son coupé}
+    \label{fig:mute_icon}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Volume bas (Low volume)} : L'icône montre un petit haut-parleur, et le curseur de volume est positionné vers le début.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.2\textwidth]{figure14.png} % Placeholder
+    \caption{Icône indiquant un volume bas}
+    \label{fig:volume_low_icon}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Volume élevé (High volume)} : L'icône montre un haut-parleur avec des ondes sonores, et le curseur est presque au maximum.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.2\textwidth]{figure15.png} % Placeholder
+    \caption{Icône indiquant un volume élevé}
+    \label{fig:volume_high_icon}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Curseur de Volume (volume\_slider)} : Permet d'ajuster le volume sonore.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure16.png} % Placeholder
+    \caption{Curseur de réglage du volume}
+    \label{fig:volume_slider}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton d'Activation des Sous-titres} : Active ou désactive l'affichage des sous-titres directement sur la vidéo.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure17.png} % Placeholder
+    \caption{Bouton d'activation et de désactivation des sous-titres}
+    \label{fig:subtitle_toggle}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton Plein Écran} : Fait basculer le lecteur vidéo en mode plein écran pour une visualisation immersive.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.4\textwidth]{figure18.png} % Placeholder
+    \caption{Bouton de passage en mode plein écran}
+    \label{fig:fullscreen_button}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Superposition de Sous-titres} : Un QLabel semi-transparent qui s'affiche par-dessus la vidéo pour afficher le texte du sous-titre courant, offrant une alternative au rendu natif de VLC.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure19.png} % Placeholder
+    \caption{Exemple de superposition des sous-titres sur la vidéo}
+    \label{fig:subtitle_overlay}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Raccourcis Clavier} : L'interface répond aux raccourcis clavier standards pour une meilleure ergonomie : Espace (Lecture/Pause), M (Muet), F (Plein écran), Échap (Quitter le plein écran).
+\end{itemize}
+
+\subsection{3.5.2 Panneau de Contrôle et de Résultats (Panneau de Droite)}
+Ce panneau est divisé verticalement en deux zones principales.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure20.png} % Placeholder
+    \caption{Vue d'ensemble du panneau de contrôle et de résultats}
+    \label{fig:control_results_panel}
+\end{figure}
+
+\textbf{1. Zone de Contrôles Supérieure} : Organisée en QGridLayout, cette zone regroupe toutes les actions et les configurations :
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure21.png} % Placeholder
+    \caption{Zone de contrôles supérieure pour la configuration}
+    \label{fig:control_zone}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sélecteur de Langue de l'Application} : Permet de changer la langue de l'interface (Anglais, Français, Arabe). Le changement en Arabe adapte également la disposition de l'interface de droite à gauche (RTL).
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure22.png} % Placeholder
+    \caption{Sélection de la langue de l'application (Anglais, Français, Arabe).}
+    \label{fig:language_selector}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure23.png} % Placeholder
+    \caption{Interface en mode Arabe (RTL - droite à gauche)}
+    \label{fig:rtl_interface}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton "Importer une Vidéo"} : Ouvre une boîte de dialogue pour sélectionner un fichier vidéo. C'est le point de départ du flux de travail.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure24.png} % Placeholder
+    \caption{Bouton "Importer une Vidéo"}
+    \label{fig:import_video_button}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure25.png} % Placeholder
+    \caption{Boîte de dialogue système pour la sélection d'un fichier vidéo}
+    \label{fig:file_dialog}
+\end{figure}
+
+\textbf{Paramètres de Génération :}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Modèle Whisper (model\_combo)} : Une liste déroulante pour choisir le modèle OpenAI Whisper à utiliser (de tiny à large), permettant un compromis entre vitesse et précision.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure26.png} % Placeholder
+    \caption{Menu déroulant pour la sélection du modèle Whisper}
+    \label{fig:whisper_model_combo}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Langue Source (Whisper) (source\_lang\_combo)} : Permet de spécifier la langue de la vidéo ou de laisser Whisper la détecter automatiquement ("Auto").
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure27.png} % Placeholder
+    \caption{Menu déroulant pour la sélection de la langue source}
+    \label{fig:whisper_lang_combo}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Le bouton Générer les Sous-titres} : est un bouton d'action principal qui, visuellement, est grisé et inactif au lancement de l'application. Sa fonction est de lancer le processus de transcription, et il ne devient cliquable qu'après l'importation réussie d'une vidéo. Ce comportement visuel guide l'utilisateur et impose un ordre logique aux opérations.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure28.png} % Placeholder
+    \caption{Bouton "Générer les Sous-titres"}
+    \label{fig:generate_subtitles_button}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton Résumer la Vidéo} : est visuellement inactif au départ. Sa fonctionnalité est de déclencher la génération d'un résumé textuel de la vidéo via l'API Gemini. Il ne devient actif qu'une fois les sous-titres originaux générés, puisqu'il dépend de leur contenu pour fonctionner.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure29.png} % Placeholder
+    \caption{Bouton "Résumer la Vidéo"}
+    \label{fig:summarize_button}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Le sélecteur "Traduire vers :"} (language\_combo) est un autre champ de sélection, visuellement simple, qui permet à l'utilisateur de définir la langue de destination pour la traduction. Sa fonction est de présenter une liste étendue de langues cibles, rendant l'application polyvalente pour un public international.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure30.png} % Placeholder
+    \caption{Menu déroulant pour la sélection de la langue de traduction}
+    \label{fig:translate_lang_combo}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Bouton Traduire les Sous-titres} (translate\_button) suit la même logique visuelle que les autres boutons d'action en étant initialement désactivé. Il a pour fonction de lancer le processus de traduction des sous-titres originaux vers la langue choisie juste au-dessus. Comme pour le résumé, son activation est conditionnée par la présence de sous-titres à traiter.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure31.png} % Placeholder
+    \caption{Bouton "Traduire les Sous-titres"}
+    \label{fig:translate_button}
+\end{figure}
+
+\textbf{2. Zone de Résultats Inférieure} : Un QTabWidget permet de naviguer entre les différents résultats textuels générés.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Onglet "Sous-titres Originaux"} : Affiche les sous-titres générés par Whisper, avec les horodatages (timestamp) et le texte de chaque segment.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure32.png} % Placeholder
+    \caption{Onglet "Sous-titres Originaux" affichant le texte et l'horodatage}
+    \label{fig:original_subtitles_tab}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Onglet "Sous-titres Traduits"} : Affiche les sous-titres après leur traduction, en conservant la structure et les horodatages d'origine.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure33.png} % Placeholder
+    \caption{Onglet "Sous-titres Traduits" après traduction}
+    \label{fig:translated_subtitles_tab}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Onglet "Résumé de la Vidéo"} : Affiche le résumé textuel généré par Gemini.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure34.png} % Placeholder
+    \caption{Onglet "Sous-titres Traduits" après traduction} % Note: caption seems inconsistent with title
+    \label{fig:video_summary_tab}
+\end{figure}
+
+\section{3.6 Mécanismes de Retour Utilisateur}
+L'interface a été conçue pour informer constamment l'utilisateur de l'état de l'application :
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Barre de Progression (QProgressBar)} : Située en bas de la fenêtre principale, elle montre la progression en temps réel des tâches longues (génération, traduction, etc.) avec un pourcentage et un message textuel décrivant l'étape en cours.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure35.png} % Placeholder
+    \caption{Barre de progression indiquant une tâche en cours}
+    \label{fig:progress_bar}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Barre de Statut (QStatusBar)} : En bas de la fenêtre, elle affiche des messages d'information (ex: "Fichier chargé", "Transcription terminée") ou des erreurs non bloquantes.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{figure36.png} % Placeholder
+    \caption{Barre de statut affichant un message d'information}
+    \label{fig:status_bar}
+\end{figure}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Activation/Désactivation des Boutons} : Les boutons d'action sont activés ou désactivés de manière contextuelle pour guider l'utilisateur dans le flux de travail et éviter les erreurs.
+    \item \textbf{Notifications Sonores} : De brefs sons (winsound) sont joués à la fin des tâches majeures pour avertir l'utilisateur que le processus est terminé, même si la fenêtre n'est pas au premier plan.
+    \item \textbf{Boîtes de Dialogue d'Erreur (QMessageBox)} : Des messages d'erreur clairs et informatifs sont affichés en cas de problème majeur (ex: API key manquante, fichier introuvable).
+    \item \textbf{Bouton Exporter l'Onglet Actuel} (export\_button) clôture la liste des actions. Visuellement, il est lui aussi inactif au départ. Sa fonction est de permettre à l'utilisateur de sauvegarder le résultat de son travail : il ouvre une boîte de dialogue d'enregistrement et s'active dès qu'un contenu (sous-titres ou résumé) est affiché. Sa particularité est d'adapter intelligemment le format de fichier suggéré (.srt ou .txt) en fonction de l'onglet actuellement consulté par l'utilisateur.
+\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figure37.png} % Placeholder
+    \caption{Bouton "Exporter l'Onglet Actuel"}
+    \label{fig:export_button}
+\end{figure}
+
+\section{3.7 Conclusion}
+Le projet CaptionLab a permis de transformer une idée ambitieuse en une application simple à utiliser et efficace. Grâce à une bonne combinaison des technologies, chaque outil a joué un rôle important : Python pour relier tout le système, PyQt5 pour créer une interface claire et facile, et python-vlc pour lire les vidéos sans problèmes.
+L'ajout de l'intelligence artificielle, comme Whisper pour écrire ce qui se dit dans la vidéo et Gemini pour résumer, a rendu l'application plus intelligente et utile. Pour que l'utilisateur ne ressente aucun blocage, on a utilisé des threads pour que les longues opérations se fassent en arrière-plan.
+Enfin, le projet a été construit de manière organisée, avec une séparation claire entre l'interface, le traitement et l'intelligence artificielle. Cela rend l'application plus stable aujourd'hui, et prête à évoluer demain, avec par exemple de nouvelles langues ou des fonctions de sous-titres plus avancées.
+
+\cleardoublepage % Nouvelle page pour la conclusion générale
+
+% --- Conclusion Générale ---
+\chapter*{Conclusion Générale}
+\addcontentsline{toc}{chapter}{Conclusion Générale} % Ajouter à la table des matières
+
+Dans un monde numérique où la vidéo est devenue le principal moyen de communication, d'éducation et de divertissement, l'accessibilité du contenu reste un enjeu majeur. Le processus de création de sous-titres, de traduction et de résumé, bien qu'essentiel, est souvent perçu comme une tâche complexe, coûteuse en temps et techniquement exigeante. C'est pour répondre à cette problématique que le projet CaptionLab a été initié, avec l'objectif de développer une solution de bureau intégrée, simple d'utilisation et puissante.
+
+Ce projet a abouti à la création d'une application fonctionnelle qui automatise et simplifie l'ensemble du flux de travail. Grâce à une architecture logicielle robuste basée sur Python et le framework PyQt5, CaptionLab offre une interface utilisateur intuitive qui guide l'utilisateur à travers les étapes de transcription, de traduction et de résumé. L'intégration de modèles d'intelligence artificielle de pointe a été la pierre angulaire de ce succès : OpenAI Whisper a fourni une transcription vocale d'une précision remarquable, tandis que l'API Google Gemini a permis de générer des résumés contextuels pertinents, et Deep Translator a rendu le contenu accessible à un public international.
+
+Au-delà de sa réalisation technique, CaptionLab démontre la valeur tangible de la combinaison de technologies modernes pour résoudre des problèmes concrets. Il offre aux créateurs de contenu, aux éducateurs et aux professionnels un outil qui non seulement leur fait gagner un temps précieux, mais qui favorise également l'inclusion en rendant leurs vidéos accessibles à des audiences plus larges, y compris les personnes sourdes ou malentendantes et les locuteurs de langues étrangères.
+
+Ce projet a également été une expérience d'apprentissage enrichissante, mettant en lumière les défis liés à l'intégration d'API diverses, à la gestion de processus asynchrones pour garantir une interface utilisateur réactive, et à la conception d'une expérience utilisateur fluide. L'architecture modulaire de l'application ouvre de nombreuses perspectives d'amélioration future. On peut notamment envisager l'implémentation d'un éditeur de sous-titres interactif pour des ajustements manuels, l'ajout de la reconnaissance du locuteur (diarisation), la prise en charge de formats d'exportation supplémentaires, ou encore la transcription en temps réel.
+
+En conclusion, le projet CaptionLab a pleinement atteint ses objectifs. Il ne s'agit pas seulement d'un logiciel, mais d'une démonstration concrète de la manière dont l'intelligence artificielle peut être démocratisée et mise au service de la créativité et de l'accessibilité. Il transforme un processus autrefois laborieux en une expérience simple et efficace, prouvant le potentiel immense qui réside à l'intersection du développement d'applications de bureau et de l'intelligence artificielle.
+
+\cleardoublepage % Nouvelle page pour la bibliographie
+
+% --- Bibliographie ---
+\chapter*{Les Références et Bibliographie}
+\addcontentsline{toc}{chapter}{Les Références et Bibliographie} % Ajouter à la table des matières
+
+\begin{thebibliography}{99} % Le nombre 99 alloue l'espace pour la plus grande étiquette (utile si vous avez plus de 9 références)
+
+\bibitem{raschka2023build} Raschka, S. (2023). \textit{Build a large language model (from scratch)}. Manning Publications.
+\bibitem{microsoftVSCode} Microsoft. (s. d.). Visual Studio Code. Consulté le 15 juin 2025 à l'adresse \url{https://code.visualstudio.com/}
+\bibitem{openaiWhisper} OpenAI. (2022). Whisper [Code source]. GitHub. Consulté le 15 juin 2025 à l'adresse \url{https://github.com/openai/whisper}
+\bibitem{googleAI} Google. (s. d.). Google AI for Developers. Consulté le 15 juin 2025 à l'adresse \url{https://ai.google.dev/}
+\bibitem{googleTranslate} Google. (s. d.). Cloud Translation. Consulté le 15 juin 2025 à l'adresse \url{https://cloud.google.com/translate}
+\bibitem{pythonOrg} Python Software Foundation. (s. d.). Welcome to Python.org. Consulté le 15 juin 2025 à l'adresse \url{https://www.python.org/}
+\bibitem{riverbankPyQt} Riverbank Computing. (s. d.). Introduction to PyQt. Consulté le 15 juin 2025 à l'adresse \url{https://riverbankcomputing.com/software/pyqt/intro}
+\bibitem{videolanVLC} VideoLAN Organization. (s. d.). VLC media player. Consulté le 15 juin 2025 à l'adresse \url{https://www.videolan.org/vlc/}
+\bibitem{pythonDotenv} Kumar, S. (s. d.). python-dotenv [Logiciel]. Python Package Index. Consulté le 15 juin 2025 à l'adresse \url{https://pypi.org/project/python-dotenv/}
+\bibitem{deepTranslator} Baccouri, N. (2023). Deep-translator [Code source]. GitHub. Consulté le 15 juin 2025 à l'adresse \url{https://github.com/nidhaloff/deep-translator}
+\bibitem{googleGenerativeAI} Google. (s. d.). google-generativeai [Logiciel]. Python Package Index. Consulté le 15 juin 2025 à l'adresse \url{https://pypi.org/project/google-generativeai/}
+\bibitem{pythonVlcOaubert} Aubert, O. (2023). python-vlc [Code source]. GitHub. Consulté le 15 juin 2025 à l'adresse \url{https://github.com/oaubert/python-vlc}
+\bibitem{ffmpeg} FFmpeg project. (s. d.). FFmpeg. Consulté le 15 juin 2025 à l'adresse \url{https://ffmpeg.org/}
+\bibitem{nltk} Natural Language Toolkit Project. (s. d.). NLTK. Consulté le 15 juin 2025 à l'adresse \url{https://www.nltk.org/}
+\bibitem{sumy} Belica, M. (2018). Sumy: Automatic text summarizer [Code source]. GitHub. Consulté le 15 juin 2025 à l'adresse \url{https://github.com/miso-belica/sumy}
+\bibitem{github} GitHub, Inc. (s. d.). GitHub. Consulté le 15 juin 2025 à l'adresse \url{https://github.com/}
+
+\end{thebibliography}
+
+\end{document}
